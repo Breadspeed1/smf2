@@ -103,6 +103,7 @@ public abstract class StateMachine<S extends Enum<S>> {
 
     private void setState(S state) {
         currentState = state;
+        handlers[currentState.ordinal()].reset();
     }
 
     /**
