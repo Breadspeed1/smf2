@@ -2,6 +2,7 @@ package frc.robot.smf;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.Optional;
 
 import frc.robot.smf.logging.LogLevel;
 import frc.robot.smf.logging.ScopeLogger;
@@ -85,6 +86,13 @@ public abstract class StateMachine<S extends Enum<S>> {
         handlers[currentState.ordinal()]
             .trigger(event)
             .ifPresent(this::setState);
+    }
+
+    protected <T> void forward(Class<T> eventType, StateMachine<?> stateMachine) {
+        setGlobalHandler(eventType, (ev) -> {
+            stateMachine.handle(ev);
+            return Optional.empty();
+        });    
     }
 
     private void setState(S state) {
