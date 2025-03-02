@@ -18,6 +18,7 @@ public class StateEventHandler<S extends Enum<S>, T extends Enum<T>> {
     /**
      * Add a handler for a specific type of message.
      * @param <E> the type of message
+     * @param topic the topic of the handler
      * @param type the class type
      * @param handler the event handler to handle such events
      */
@@ -28,6 +29,7 @@ public class StateEventHandler<S extends Enum<S>, T extends Enum<T>> {
     /**
      * Handle the event handler for the type being sent.
      * @param <E> the type of event
+     * @param topic the topic of the event
      * @param event the event itself
      */
     @SuppressWarnings("unchecked")
@@ -41,6 +43,9 @@ public class StateEventHandler<S extends Enum<S>, T extends Enum<T>> {
         return Optional.empty();
     }
 
+    /**
+     * Reset the event handler
+     */
     public void reset() {}
 
     public S getState() {

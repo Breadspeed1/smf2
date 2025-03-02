@@ -88,7 +88,7 @@ public abstract class StateMachine<S extends Enum<S>, T extends Enum<T>> impleme
     /**
      * Handle an event.
      * @param <E> the type of the event being handled.
-     * @param topic the topic for the handler
+     * @param topic the topic of the event
      * @param event the event to handle.
      */
     public <E> void handle(T topic, E event) {
