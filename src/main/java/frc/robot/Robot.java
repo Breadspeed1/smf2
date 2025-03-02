@@ -5,9 +5,11 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.smf.events.DisableEvent;
 import frc.robot.smf.events.EnableEvent;
 import frc.robot.smf.events.GameState;
+import frc.robot.smf.events.TimeEvent;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -28,7 +30,9 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+    rc.handle(new TimeEvent(Timer.getTimestamp(), Timer.getMatchTime()));
+  }
 
   @Override
   public void autonomousInit() {

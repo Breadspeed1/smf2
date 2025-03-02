@@ -4,7 +4,6 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Optional;
 
-import frc.robot.smf.logging.LogLevel;
 import frc.robot.smf.logging.ScopeLogger;
 
 public abstract class StateMachine<S extends Enum<S>> {
@@ -30,8 +29,6 @@ public abstract class StateMachine<S extends Enum<S>> {
         this.name = name;
         this.currentState = initialState;
         this.logger = logger;
-
-        createHandlers();
     }
 
     /**
@@ -82,7 +79,6 @@ public abstract class StateMachine<S extends Enum<S>> {
      * @param event the event to handle.
      */
     public <T> void handle(T event) {
-        logger.log(LogLevel.INFO, "Handling event of type %s in state %s".formatted(event.getClass().getSimpleName(), currentState));
         handlers[currentState.ordinal()]
             .trigger(event)
             .ifPresent(this::setState);
@@ -96,7 +92,6 @@ public abstract class StateMachine<S extends Enum<S>> {
     }
 
     private void setState(S state) {
-        logger.log(LogLevel.INFO, "Transitioning from %s to %s".formatted(currentState, state));
         currentState = state;
     }
 
@@ -104,7 +99,7 @@ public abstract class StateMachine<S extends Enum<S>> {
      * Set the logger of the state machine
      * @param logger the new logger
      */
-    protected void setLogger(ScopeLogger logger) {
+    public void setLogger(ScopeLogger logger) {
         this.logger = logger;
     }
 
@@ -112,15 +107,9 @@ public abstract class StateMachine<S extends Enum<S>> {
      * Get the logger of the state machine
      * @return the logger
      */
-    protected ScopeLogger getLogger() {
+    public ScopeLogger getLogger() {
         return logger;
     }
-
-    /**
-     * The place to set up all the handlers upon initialization.
-     * This function is called once after the creation of the state machine.
-     */
-    protected abstract void createHandlers();
 
     /**
      * Get the name of the state machine
