@@ -55,6 +55,7 @@ public abstract class StateMachine<S extends Enum<S>, T extends Enum<T>> impleme
     /**
      * Set the event handler for all states for a specific event.
      * @param <E> the type of event
+     * @param topic the topic of the handler
      * @param eventType the classtype of the event class
      * @param handler the handler to handle the event
      */
@@ -68,6 +69,7 @@ public abstract class StateMachine<S extends Enum<S>, T extends Enum<T>> impleme
      * Set the event handler for a specific state and event.
      * @param <E> the type of event
      * @param eventType the classtype of the event class
+     * @param topic the topic for the handler
      * @param state the state to apply the handler to
      * @param handler the handler to handle the event
      */
@@ -86,6 +88,7 @@ public abstract class StateMachine<S extends Enum<S>, T extends Enum<T>> impleme
     /**
      * Handle an event.
      * @param <E> the type of the event being handled.
+     * @param topic the topic for the handler
      * @param event the event to handle.
      */
     public <E> void handle(T topic, E event) {
@@ -104,6 +107,15 @@ public abstract class StateMachine<S extends Enum<S>, T extends Enum<T>> impleme
             .ifPresent(this::setState);
     }
 
+    /**
+     * Forward all messages of type on topic to a state machine.
+     * @param <E> Type of event
+     * @param <NT> Receiver's topic type
+     * @param eventType Classtype of event
+     * @param oldTopic Topic to intercept form
+     * @param newTopic Topic to forward to
+     * @param stateMachine State machine to forward to
+     */
     protected <E, NT extends Enum<NT>> void forward(Class<E> eventType, T oldTopic, NT newTopic, StateMachine<?, NT> stateMachine) {
         var key = new Pair<Class<?>, T>(eventType, oldTopic);
         forwards.computeIfAbsent(key, (_k) -> new HashMap<>());
