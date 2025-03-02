@@ -31,12 +31,12 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-    rc.handle(new TimeEvent(Timer.getTimestamp(), Timer.getMatchTime()));
+    rc.handle(RobotContainer.Topic.TIME_EVENTS, new TimeEvent(Timer.getTimestamp(), Timer.getMatchTime()));
   }
 
   @Override
   public void autonomousInit() {
-    rc.handle(new EnableEvent(GameState.AUTONOMOUS));
+    rc.handle(RobotContainer.Topic.MATCH_EVENTS, new EnableEvent(GameState.AUTONOMOUS));
   }
 
   @Override
@@ -44,7 +44,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    rc.handle(new EnableEvent(GameState.TELEOP));
+    rc.handle(RobotContainer.Topic.MATCH_EVENTS, new EnableEvent(GameState.TELEOP));
   }
 
   @Override
@@ -52,7 +52,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledInit() {
-    rc.handle(new DisableEvent());
+    rc.handle(RobotContainer.Topic.MATCH_EVENTS, new DisableEvent());
   }
 
   @Override
@@ -60,7 +60,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testInit() {
-    rc.handle(new EnableEvent(GameState.TEST));
+    rc.handle(RobotContainer.Topic.MATCH_EVENTS, new EnableEvent(GameState.TEST));
   }
 
   @Override

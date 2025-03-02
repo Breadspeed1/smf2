@@ -8,7 +8,7 @@ import frc.robot.smf.events.EnableEvent;
 import frc.robot.smf.events.TimeEvent;
 import frc.robot.smf.logging.LogLevel;
 
-public class ExampleSubsystem extends StateMachine<ExampleSubsystem.State> {
+public class ExampleSubsystem extends StateMachine<ExampleSubsystem.State, ExampleSubsystem.Topic> {
     private double startTime;
 
     public ExampleSubsystem() {
@@ -19,7 +19,12 @@ public class ExampleSubsystem extends StateMachine<ExampleSubsystem.State> {
     }
 
     private void createHandlers() {
-        setHandler(TimeEvent.class, State.FLIP, (ev) -> {
+        setGlobalHandler(Object.class, Topic.TIME_EVENTS, (ev) -> {
+            getLogger().log(LogLevel.DEBUG, ev.toString());
+            return Optional.empty();
+        });
+
+        setHandler(TimeEvent.class, Topic.TIME_EVENTS, State.FLIP, (ev) -> {
             if (ev.time() - startTime > 1) {
                 startTime = ev.time();
                 getLogger().log(LogLevel.INFO, "Flop");
@@ -29,7 +34,7 @@ public class ExampleSubsystem extends StateMachine<ExampleSubsystem.State> {
             return Optional.empty();
         });
 
-        setHandler(TimeEvent.class, State.FLOP, (ev) -> {
+        setHandler(TimeEvent.class, Topic.TIME_EVENTS, State.FLOP, (ev) -> {
             if (ev.time() - startTime > 1) {
                 startTime = ev.time();
                 getLogger().log(LogLevel.INFO, "Flip");
@@ -39,19 +44,24 @@ public class ExampleSubsystem extends StateMachine<ExampleSubsystem.State> {
             return Optional.empty();
         });
 
-        setHandler(EnableEvent.class, State.DISABLED, (_ev) -> Optional.of(State.FLIP));
+        setHandler(EnableEvent.class, Topic.MATCH_EVENTS, State.DISABLED, (_ev) -> Optional.of(State.FLIP));
 
-        setHandler(TimeEvent.class, State.DISABLED, (ev) -> {
+        setHandler(TimeEvent.class, Topic.TIME_EVENTS, State.DISABLED, (ev) -> {
             startTime = ev.time();
             return Optional.empty();
         });
         
-        setGlobalHandler(DisableEvent.class, (_ev) -> Optional.of(State.DISABLED));
+        setGlobalHandler(DisableEvent.class, Topic.MATCH_EVENTS, (_ev) -> Optional.of(State.DISABLED));
     }
 
     enum State {
         FLIP,
         FLOP,
         DISABLED
+    }
+
+    enum Topic {
+        MATCH_EVENTS,
+        TIME_EVENTS
     }
 }

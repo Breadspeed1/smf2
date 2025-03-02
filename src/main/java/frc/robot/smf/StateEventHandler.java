@@ -3,9 +3,13 @@ package frc.robot.smf;
 import java.util.HashMap;
 import java.util.Optional;
 
-public class StateEventHandler<S extends Enum<S>> {
-    private final HashMap<Class<?>, EventHandler<S, ?>> handlerMap = new HashMap<>();
+import frc.robot.smf.util.Pair;
+
+public class StateEventHandler<S extends Enum<S>, T extends Enum<T>> {
+    private final HashMap<Pair<Class<?>, T>, EventHandler<S, ?>> handlerMap = new HashMap<>();
     private final S state;
+    
+    private final Pair<Class<?>, T> keybuf = new Pair<Class<?>, T>(null, null);
 
     public StateEventHandler(S state) {
         this.state = state;
@@ -13,23 +17,25 @@ public class StateEventHandler<S extends Enum<S>> {
 
     /**
      * Add a handler for a specific type of message.
-     * @param <T> the type of message
+     * @param <E> the type of message
      * @param type the class type
      * @param handler the event handler to handle such events
      */
-    public <T> void setHandler(Class<T> type, EventHandler<S, T> handler) {
-        handlerMap.put(type, handler);
+    public <E> void setHandler(Class<E> type, T topic, EventHandler<S, E> handler) {
+        handlerMap.put(new Pair<Class<?>, T>(type, topic), handler);
     }
 
     /**
-     * Trigger the event handler for the type being sent.
-     * @param <T> the type of event
+     * Handle the event handler for the type being sent.
+     * @param <E> the type of event
      * @param event the event itself
      */
     @SuppressWarnings("unchecked")
-    public <T> Optional<S> trigger(T event) {
-        if (handlerMap.containsKey(event.getClass())) {
-            return ((EventHandler<S, T>) handlerMap.get(event.getClass())).handle(event);
+    public <E> Optional<S> handle(E event, T topic) {
+        keybuf.left = event.getClass();
+        keybuf.right = topic;
+        if (handlerMap.containsKey(keybuf)) {
+            return ((EventHandler<S, E>) handlerMap.get(keybuf)).handle(event);
         }
 
         return Optional.empty();
