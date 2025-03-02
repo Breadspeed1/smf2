@@ -5,6 +5,9 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import frc.robot.smf.events.DisableEvent;
+import frc.robot.smf.events.EnableEvent;
+import frc.robot.smf.events.GameState;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -16,31 +19,45 @@ public class Robot extends TimedRobot {
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
-  public Robot() {}
+  private final RobotContainer rc;
+
+  public Robot() {
+    super(0.05);
+
+    rc = new RobotContainer();
+  }
 
   @Override
   public void robotPeriodic() {}
 
   @Override
-  public void autonomousInit() {}
+  public void autonomousInit() {
+    rc.handle(new EnableEvent(GameState.AUTONOMOUS));
+  }
 
   @Override
   public void autonomousPeriodic() {}
 
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    rc.handle(new EnableEvent(GameState.TELEOP));
+  }
 
   @Override
   public void teleopPeriodic() {}
 
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    rc.handle(new DisableEvent());
+  }
 
   @Override
   public void disabledPeriodic() {}
 
   @Override
-  public void testInit() {}
+  public void testInit() {
+    rc.handle(new EnableEvent(GameState.TEST));
+  }
 
   @Override
   public void testPeriodic() {}
