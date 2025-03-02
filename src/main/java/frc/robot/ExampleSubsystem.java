@@ -27,7 +27,6 @@ public class ExampleSubsystem extends StateMachine<ExampleSubsystem.State, Examp
         setHandler(TimeEvent.class, Topic.TIME_EVENTS, State.FLIP, (ev) -> {
             if (ev.time() - startTime > 1) {
                 startTime = ev.time();
-                getLogger().log(LogLevel.INFO, "Flop");
                 return Optional.of(State.FLOP);
             }
 
@@ -37,7 +36,6 @@ public class ExampleSubsystem extends StateMachine<ExampleSubsystem.State, Examp
         setHandler(TimeEvent.class, Topic.TIME_EVENTS, State.FLOP, (ev) -> {
             if (ev.time() - startTime > 1) {
                 startTime = ev.time();
-                getLogger().log(LogLevel.INFO, "Flip");
                 return Optional.of(State.FLIP);
             }
 

@@ -5,10 +5,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.function.Consumer;
 
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import frc.robot.smf.logging.ScopeLogger;
 import frc.robot.smf.util.Pair;
 
-public abstract class StateMachine<S extends Enum<S>, T extends Enum<T>> {
+public abstract class StateMachine<S extends Enum<S>, T extends Enum<T>> implements Sendable {
     private final StateEventHandler<S, T>[] handlers;
     private final HashMap<Pair<Class<?>, T>, HashMap<StateMachine<?, ?>, Consumer<Object>>> forwards;
     private final String name;
@@ -17,6 +19,8 @@ public abstract class StateMachine<S extends Enum<S>, T extends Enum<T>> {
 
     private ScopeLogger logger;
     private S currentState;
+
+    private Object lastEvent;
 
     /**
      * Create a new state machine.
@@ -85,6 +89,8 @@ public abstract class StateMachine<S extends Enum<S>, T extends Enum<T>> {
      * @param event the event to handle.
      */
     public <E> void handle(T topic, E event) {
+        lastEvent = event;
+
         fkeybuf.left = event.getClass();
         fkeybuf.right = topic;
 
@@ -134,5 +140,13 @@ public abstract class StateMachine<S extends Enum<S>, T extends Enum<T>> {
      */
     public String getName() {
         return name;
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.setSmartDashboardType("State Machine");
+        builder.publishConstBoolean("controllable", false);
+        builder.addStringProperty("State", () -> currentState.toString(), null);
+        builder.addStringProperty("Last Event Type", () -> lastEvent != null ? lastEvent.getClass().getSimpleName() : "No events yet.", null);
     }
 }

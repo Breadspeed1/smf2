@@ -2,12 +2,12 @@ package frc.robot;
 
 import java.util.Optional;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.smf.StateMachine;
 import frc.robot.smf.events.DisableEvent;
 import frc.robot.smf.events.EnableEvent;
 import frc.robot.smf.events.GameState;
 import frc.robot.smf.events.TimeEvent;
-import frc.robot.smf.logging.LogLevel;
 
 public class RobotContainer extends StateMachine<RobotContainer.State, RobotContainer.Topic> {
     private final ExampleSubsystem exampleSubsystem;
@@ -17,6 +17,8 @@ public class RobotContainer extends StateMachine<RobotContainer.State, RobotCont
 
         exampleSubsystem = new ExampleSubsystem();
         exampleSubsystem.setLogger(getLogger().sub(exampleSubsystem.getName()));
+
+        SmartDashboard.putData(exampleSubsystem.getName(), exampleSubsystem);
 
         createHandlers();
     }
@@ -38,11 +40,6 @@ public class RobotContainer extends StateMachine<RobotContainer.State, RobotCont
                 default:
                     return Optional.empty();
             }
-        });
-
-        setHandler(TimeEvent.class, Topic.TIME_EVENTS, State.TEST, (ev) -> {
-            getLogger().log(LogLevel.INFO, "IM TESTING!!!!!");
-            return Optional.empty();
         });
 
         forward(DisableEvent.class, Topic.MATCH_EVENTS, ExampleSubsystem.Topic.MATCH_EVENTS, exampleSubsystem);
