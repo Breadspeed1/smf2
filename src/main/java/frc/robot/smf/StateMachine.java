@@ -2,12 +2,14 @@ package frc.robot.smf;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import frc.robot.smf.logging.ScopeLogger;
 
 public abstract class StateMachine<S extends Enum<S>> {
     private final StateEventHandler<S>[] handlers;
+    private final HashMap<Class<?>, HashSet<StateMachine<?>>> forwards;
     private final String name;
 
     private ScopeLogger logger;
@@ -25,6 +27,8 @@ public abstract class StateMachine<S extends Enum<S>> {
         var def = new StateEventHandler<>(initialState);
         handlers = (StateEventHandler<S>[]) Array.newInstance(def.getClass(), stateType.getEnumConstants().length);
         Arrays.setAll(handlers, (i) -> new StateEventHandler<>(stateType.getEnumConstants()[i]));
+
+        forwards = new HashMap<>();
 
         this.name = name;
         this.currentState = initialState;
@@ -79,16 +83,22 @@ public abstract class StateMachine<S extends Enum<S>> {
      * @param event the event to handle.
      */
     public <T> void handle(T event) {
+        forwards.computeIfPresent(event.getClass(), (_k, v) -> {
+            v.forEach((sm) -> sm.handle(event));
+            return v;
+        });
+
         handlers[currentState.ordinal()]
             .trigger(event)
             .ifPresent(this::setState);
     }
 
     protected <T> void forward(Class<T> eventType, StateMachine<?> stateMachine) {
-        setGlobalHandler(eventType, (ev) -> {
-            stateMachine.handle(ev);
-            return Optional.empty();
-        });    
+        forwards.computeIfAbsent(eventType, (_k) -> new HashSet<>());
+        forwards.compute(eventType, (_k, v) -> {
+            v.add(stateMachine);
+            return v;
+        });
     }
 
     private void setState(S state) {
