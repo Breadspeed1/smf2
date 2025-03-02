@@ -23,7 +23,6 @@ public class Robot extends TimedRobot {
    * initialization code.
    */
   private final RobotContainer rc;
-  private double t = 0;
 
   public Robot() {
     super(0.05);
@@ -35,10 +34,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-    if (Timer.getTimestamp() - t > 0.5) {
-      t = Timer.getTimestamp();
-      rc.handle(RobotContainer.Topic.TIME_EVENTS, new TimeEvent(Timer.getTimestamp(), Timer.getMatchTime()));
-    }
+    rc.handle(RobotContainer.Topic.TIME_EVENTS, new TimeEvent(Timer.getTimestamp(), Timer.getMatchTime()));
   }
 
   @Override
